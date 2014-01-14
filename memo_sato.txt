@@ -24,12 +24,14 @@
 
 -Enemy
 	-Enemy::create()の引数でEnemyTypeを指定して生成する？（生成時にどの種類の敵かを指定する）
+	-アニメーション処理（ジャンプしたり）
 	-玉を撃つ
 
 -Coin
-	-
+	-コインが取得されたときのアニメーション処理
 
 -BackGround
+	-BackGround::create()の引数でstageIdを指定する？
 	-背景を動かす(パララックス)
 
 -StatusView
