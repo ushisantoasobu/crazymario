@@ -64,3 +64,99 @@
 		}
 	]
 }
+
+
+
+
+
+
+GameScene
+
+//variables
+
+//function
+initialSetting()
+schedule()
+
+ ゴール判定
+ 衝突判定　敵　コイン
+  ポイント減る
+  死ぬ
+
+touchBegan()
+ ジャンプする
+goal();
+dameged()
+die()
+gotCoin()
+updateInfo()
+
+
+
+Player
+
+//variables
+
+//function
+jump()
+die()
+goal()
+changeStatus()
+
+
+
+BackGround
+
+//variables
+
+//function
+BackGround::createWithStageId(int stageId);
+void goForward()
+void stop()
+
+
+
+Enemy
+
+//variables
+enemyId
+
+//
+Enemy::createWithEnemyId(int enemyId)
+int getEnemyId()  乗ったときに倒せるのか死ぬのかの判定
+
+
+
+UserStatus
+
+//
+status (小さいマリオ　大きなマリオ)
+currentStageId
+coinAmount
+
+//function
+UserStatus::sharedStatus()
+
+
+
+GameUtil
+
+//function
+static GameData GameUtil::getGameData();
+sound(Enum GameSound);
+loadImage(CCArray); -> 画像は先読み？ローカルだから問題ない？
+
+
+GameData
+enemy
+backgroundUrl
+coin
+goal
+
+UserData
+
+
+
+
+素材集める　音つくる　などの脇役いないと大変かも　とのこと
+toolは必要？　ステージ設計するのだったり
