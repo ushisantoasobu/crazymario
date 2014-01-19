@@ -1,0 +1,22 @@
+【参考情報】
+
+Tile Map Editor
+http://www.mapeditor.org/
+
+Open Game Art
+http://opengameart.org
+
+Google C++ スタイルガイド
+http://www.textdrop.net/google-styleguide-ja/cppguide.xml
+
+cocos 2d-x APIリファレンス
+http://www.cocos2d-x.org/reference/native-cpp/V2.2/index.html
+
+効果音作成支援サイト
+http://www.bfxr.net/
+
+Texture Packer
+http://www.codeandweb.com/texturepacker
+
+Physics Editor
+http://www.codeandweb.com/physicseditor
