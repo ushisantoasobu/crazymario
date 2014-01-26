@@ -15,6 +15,7 @@ private:
     enum Tag {
         tag_background,
         tag_crazyMario,
+        tag_crazyMarioJump
     };
     
     void makeBackground();
