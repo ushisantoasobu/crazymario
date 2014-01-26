@@ -29,3 +29,26 @@ CCFiniteTimeAction* Animation::resultAnimation(CCObject* target, SEL_CallFunc se
     
     return CCSequence::create(scaleUp, delay, func, NULL);
 }
+
+CCFiniteTimeAction* Animation::marioAction() {
+    CCArray *animFrames = CCArray::create();
+    CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    
+    for(int i = 0; i < 3; i++)
+    {
+        CCString* fileName = CCString::createWithFormat("mario/mario%d.png", i);
+        CCSpriteFrame *frame = cache->spriteFrameByName(fileName->getCString());
+        if (!frame)
+        {
+            CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage(fileName->getCString());
+            CCRect bounds = CCRectMake(0, 0, texture->getContentSize().width, texture->getContentSize().height);
+            frame = CCSpriteFrame::createWithTexture(texture, bounds);
+        }
+        
+        animFrames->addObject(frame);
+    }
+    
+    CCAnimation* animation = CCAnimation::createWithSpriteFrames(animFrames, 0.1);
+    
+    return CCAnimate::create(animation);
+}
