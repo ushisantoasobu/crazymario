@@ -15,6 +15,7 @@ bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
     
     // 背景を生成
     CCSprite* pBG = CCSprite::create( "bgimage/stage0001.png" );
+    pBG->setTag( StageTag );
     //pBG->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
     //Scene->addChild( pBG, 0, StageTag );
     
@@ -30,8 +31,11 @@ bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
     
     CCParallaxNode* paraNode = CCParallaxNode::create();
     CCSpriteBatchNode* pCoins = createCoin( Scene );
+    //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
+    //pSky->setTag( StageTag );
+
     CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
-    paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( 0, size.height * 0.5 ) );
+    paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
     paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
     paraNode->addChild( pGround, 2, ccp( 1.0f, 0 ), ccp( -size.width * 0.5, 0 ) );
     paraNode->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
