@@ -32,11 +32,7 @@ bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag
     //pBG->addChild( pCloud2 );
     
     CCParallaxNode* paraNode = CCParallaxNode::create();
-<<<<<<< HEAD
-    CCSpriteBatchNode* pCoins = createCoin( Scene );
-=======
     CCSpriteBatchNode* pCoins = createCoin( Scene, stageData );
->>>>>>> checkout/ssato
     //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
     //pSky->setTag( StageTag );
 
