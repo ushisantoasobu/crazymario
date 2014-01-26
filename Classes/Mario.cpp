@@ -26,7 +26,7 @@ void Mario::moveMario(CCLayer* gameScene, int stageId, int tagId, int marioActio
 
 void Mario::jumpMario(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag){
     CCSprite* marioSprite = (CCSprite*) gameScene->getChildByTag(tagId);
-    int moveX = 4;
+    int moveX = 0;
     int moveY = 0;
     marioSprite->runAction(CCJumpBy::create(1.0, ccp(moveX, moveY), 300, 1));
 }

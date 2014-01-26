@@ -52,3 +52,7 @@ CCFiniteTimeAction* Animation::marioAction() {
     
     return CCAnimate::create(animation);
 }
+
+CCFiniteTimeAction* Animation::enemyJumpAction(int moveX, int moveY) {
+    return CCJumpBy::create(5.0, ccp(moveX, moveY), 300, 1);
+}
