@@ -2,11 +2,15 @@
 #define __GAMESCENE__H
 
 #include "cocos2d.h"
+#include "cocos-ext.h"
+#include "spine/Json.h"
 
 USING_NS_CC;
+//USING_NS_CC_EXT;
 
 class GameScene : public CCLayer {
 private:
+    int stageId;
     float marioPosition;
     enum Tag {
         tag_background,
@@ -14,6 +18,8 @@ private:
     };
     
     void makeBackground();
+    void makeMario();
+    cocos2d::extension::Json* constructStage();
     void moveMario(float fDelta);
     bool checkCollision();
     void gameOver();
