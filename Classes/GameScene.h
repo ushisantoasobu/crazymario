@@ -8,15 +8,19 @@ USING_NS_CC;
 class GameScene : public CCLayer {
 private:
     float marioPosition;
-    enum Tag {
-        tag_background,
-        tag_crazyMario,
+    enum TagId {
+        background = 1,
+        crazyMarioSprite = 10,
+        crazyMarioMove = 11,
+        crazyMarioJump = 12
     };
     
     void makeBackground();
     void moveMario(float fDelta);
     bool checkCollision();
     void gameOver();
+    
+    bool isJump = false;
     
 public:
     virtual bool init();

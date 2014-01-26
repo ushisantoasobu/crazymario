@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "BackGround.h"
+#include "Mario.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -22,7 +23,7 @@ bool GameScene::init() {
     makeBackground();
     
     // marioの配置
-    
+    Mario::createMario(this, 1, 10);
     // enemy & coinの配置マスタ情報取得
     
     // enemyの配置
@@ -43,7 +44,7 @@ void GameScene::makeBackground()
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, 1, tag_background );
+    BackGround::createStage( this, 1, 1);
 }
 
 // マリオ移動や当り判定
@@ -57,6 +58,8 @@ void GameScene::moveMario(float fDelta)
         // ゲームオーバー処理
         CCLog("Game over..");
         this->gameOver();
+    } else {
+        Mario::moveMario(this, 1, crazyMarioSprite, crazyMarioJump);
     }
 }
 
@@ -64,9 +67,9 @@ void GameScene::moveMario(float fDelta)
 bool GameScene::checkCollision()
 {
     int collision = false;
-    if (rand() % 100 == 1) {
-        collision = true;
-    }
+//    if (rand() % 100 == 1) {
+//        collision = true;
+//    }
     return collision;
 }
 
@@ -81,6 +84,7 @@ void GameScene::gameOver()
 // タップが開始されたときの処理
 bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
 {
+    isJump = true;
     return true;
 }
 
@@ -92,6 +96,7 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     CCPoint touchPoint = pDirector->convertToGL(pTouch->getLocationInView());
     
     CCLog("x: %f, y: %f", touchPoint.x, touchPoint.y);
+    Mario::jumpMario(this, 1, crazyMarioSprite, crazyMarioJump);
     
     // TODO: ジャンプの処理呼び出し
     
