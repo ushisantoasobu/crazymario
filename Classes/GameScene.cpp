@@ -74,7 +74,7 @@ cocos2d::extension::Json* GameScene::constructStage()
 // マリオを作成する
 void GameScene::makeMario()
 {
-    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    //CCSize size = CCDirector::sharedDirector()->getWinSize();
     
     // ここはマリオ担当が作ったメソッドを入れる
 //    CCSprite* pMario = CCSprite::create("cloud.png");
@@ -109,22 +109,68 @@ void GameScene::moveMario(float fDelta)
     CCLog("marioPosition: %f", marioPosition);
     
     
-    if (this->checkCollision()) {
-        // ゲームオーバー処理
+    if (this->checkCollision(1))
+    {   // ゲームオーバー処理
         CCLog("Game over..");
         this->gameOver();
-    } else {
-        Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+    }
+    else
+    {
+        if (this->checkCollision(2))
+        {   // コイン取得処理
+            
+            // コイン削除処理
+        }
+        
+        if (!this->checkJumping())
+        {
+            Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+        }
     }
 }
 
-// 衝突判定
-bool GameScene::checkCollision()
+// ジャンプ判定
+bool GameScene::checkJumping()
 {
-    int collision = false;
+    bool jumping = true;
+    
+    
+    // 床との設置判定
+    
+    return jumping;
+}
+
+// 衝突判定
+bool GameScene::checkCollision(const int type)
+{
+    // マリオ情報取得
+    
+    CCArray* target = CCArray::create();
+    if (type == 1)
+    {   // enemy情報取得
+    }
+    else if (type == 2)
+    {   // コイン情報取得
+        
+    }
+    else
+    {   // それ以外は何もしない
+    }
+    
+    bool collision = false;
+    
+    CCSprite* pCoin = NULL;
+    CCObject* object = NULL;
+    CCARRAY_FOREACH(target, object)
+    {
+        pCoin = (CCSprite*)this->getChildByTag(10001);
+        
+    }
+    
 //    if (rand() % 100 == 1) {
 //        collision = true;
 //    }
+    
     return collision;
 }
 

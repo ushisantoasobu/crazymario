@@ -22,7 +22,8 @@ private:
     void makeMario();
     cocos2d::extension::Json* constructStage();
     void moveMario(float fDelta);
-    bool checkCollision();
+    bool checkCollision(const int type);
+    bool checkJumping();
     void gameOver();
     
 public:
