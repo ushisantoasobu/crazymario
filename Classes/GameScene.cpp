@@ -56,7 +56,7 @@ void GameScene::moveMario(float fDelta)
     if (this->checkCollision()) {
         // ゲームオーバー処理
         CCLog("Game over..");
-        this->gameOver();
+        //this->gameOver();
     }
 }
 
