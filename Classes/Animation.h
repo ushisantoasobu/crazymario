@@ -21,6 +21,9 @@ public:
     static CCFiniteTimeAction* vibrationAnimation();
     
     static CCFiniteTimeAction* resultAnimation(CCObject* target, SEL_CallFunc selector);
+    
+    //  マリオアニメーション
+    static CCFiniteTimeAction* marioAction();
 };
 
 #endif /* defined(__crazymario__Animation__) */
