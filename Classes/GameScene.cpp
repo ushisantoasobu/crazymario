@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "BackGround.h"
+#include "Mario.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -76,13 +77,14 @@ void GameScene::makeMario()
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     
     // ここはマリオ担当が作ったメソッドを入れる
-    CCSprite* pMario = CCSprite::create("cloud.png");
-    pMario->setPosition(ccp(size.width * 0.1, size.height * 0.3));
-    pMario->setScale(0.2);
-    pMario->setTag(tag_crazyMario);
-    this->addChild(pMario);
-    
-    marioPosition = pMario->getPositionX();
+//    CCSprite* pMario = CCSprite::create("cloud.png");
+//    pMario->setPosition(ccp(size.width * 0.1, size.height * 0.3));
+//    pMario->setScale(0.2);
+//    pMario->setTag(tag_crazyMario);
+//    this->addChild(pMario);
+//    
+//    marioPosition = pMario->getPositionX();
+    Mario::createMario(this, 1, tag_crazyMario);
 }
 
 // 背景を作成する
@@ -101,8 +103,8 @@ void GameScene::moveMario(float fDelta)
 {
     marioPosition += fDelta * 10;
     
-    CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
-    pMario->setPositionX(marioPosition);
+    //CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
+    //pMario->setPositionX(marioPosition);
     
     CCLog("marioPosition: %f", marioPosition);
     
@@ -111,6 +113,8 @@ void GameScene::moveMario(float fDelta)
         // ゲームオーバー処理
         CCLog("Game over..");
         this->gameOver();
+    } else {
+        Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
     }
 }
 
@@ -118,9 +122,9 @@ void GameScene::moveMario(float fDelta)
 bool GameScene::checkCollision()
 {
     int collision = false;
-    if (rand() % 100 == 1) {
-        collision = true;
-    }
+//    if (rand() % 100 == 1) {
+//        collision = true;
+//    }
     return collision;
 }
 
@@ -148,5 +152,5 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     CCLog("x: %f, y: %f", touchPoint.x, touchPoint.y);
     
     // TODO: ジャンプの処理呼び出し
-    
+    Mario::jumpMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
 }
