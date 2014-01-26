@@ -24,6 +24,10 @@ public:
     
     //  マリオアニメーション
     static CCFiniteTimeAction* marioAction();
+    // ジャンプする敵
+    static CCFiniteTimeAction* enemyJumpAction(int moveX, int moveY);
+    // 水平アニメーションをする敵
+    static CCFiniteTimeAction* enemyMoveAction();
 };
 
 #endif /* defined(__crazymario__Animation__) */
