@@ -31,3 +31,9 @@ void Mario::jumpMario(CCLayer* gameScene, int stageId, int tagId, int marioJumpT
     marioSprite->runAction(CCJumpBy::create(1.0, ccp(moveX, moveY), 300, 1));
 }
 
+void Mario::die(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag){
+    gameScene->removeChildByTag(tagId);
+    CCParticleSystemQuad* p = CCParticleSystemQuad::create("particle/dead.plist");
+    gameScene->addChild(p);
+}
+

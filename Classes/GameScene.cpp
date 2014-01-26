@@ -138,9 +138,28 @@ bool GameScene::checkCollision()
 // ゲームオーバー処理
 void GameScene::gameOver()
 {
+    //スケジュールとめる
+    this->unschedule(schedule_selector(GameScene::moveMario));
+    
+    //マリオ死亡アニメーション
+    Mario::die(this, 1, tag_crazyMario, tag_crazyMarioJump);
+    
+    this->schedule(schedule_selector(GameScene::gotoGameOver), 2);
+    
     // TODO: ゲームオーバー画面に飛ばす？？
-    CCScene* gameScene = (CCScene*)GameScene::create();
-    CCDirector::sharedDirector()->replaceScene(gameScene);
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
+}
+
+void GameScene::gotoGameOver()
+{
+    this->unschedule(schedule_selector(GameScene::gotoGameOver));
+    
+    CCLOG("gameoverシーンへ遷移");
+    
+    // TODO: ゲームオーバー画面に飛ばす？？
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
 }
 
 // タップが開始されたときの処理

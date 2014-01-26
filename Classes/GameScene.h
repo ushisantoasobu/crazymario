@@ -28,6 +28,7 @@ private:
     void moveMario(float fDelta);
     bool checkCollision();
     void gameOver();
+    void gotoGameOver();
     void createScoreLabel();
     void updateScoreLabel();
     
