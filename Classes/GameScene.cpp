@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "BackGround.h"
 #include "Mario.h"
+#include "GameUtil.h"
+#include "UserStatus.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -20,8 +22,13 @@ bool GameScene::init() {
     stageId = 1;
     marioPosition = 0;
     
+    StageData* stageData = GameUtil::getGameData();
+    
+    //スコアラベルを作成する
+    createScoreLabel();
+    
     // 背景を作成する
-    makeBackground();
+    makeBackground(stageData);
     
     // marioの配置
     makeMario();
@@ -88,14 +95,14 @@ void GameScene::makeMario()
 }
 
 // 背景を作成する
-void GameScene::makeBackground()
+void GameScene::makeBackground(StageData* stageData)
 {
     // タップイベントを取得する
     setTouchEnabled(true);
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, 1, tag_background );
+    BackGround::createStage( this, stageData, tag_background );
 }
 
 // マリオ移動や当り判定
@@ -153,4 +160,24 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     
     // TODO: ジャンプの処理呼び出し
     Mario::jumpMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+}
+
+void GameScene::createScoreLabel()
+{
+    cocos2d::CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+    
+    CCLabelTTF *text = CCLabelTTF::create("score:0", "American Typewriter", 64);
+    text->setAnchorPoint(ccp(0.0, 1.0));
+    text->setHorizontalAlignment(kCCTextAlignmentLeft);
+    text->setPosition(CCPointMake(winSize.width * 0.05, winSize.height * 0.92));
+    this->addChild(text, 100, tag_score_label);
+}
+
+void GameScene::updateScoreLabel()
+{
+    CCLabelTTF *text = (CCLabelTTF *)this->getChildByTag(tag_score_label);    
+    int score = UserStatus::sharedUserStatus()->score;
+    
+    CCString *str = CCString::createWithFormat("score:%d", score);
+    text->setString(str->getCString());
 }

@@ -7,9 +7,11 @@
 //
 
 #include "BackGround.h"
+#include "CoinData.h"
+#include "GameScene.h"
 
 // ステージ作成
-bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
+bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag )
 {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     
@@ -29,7 +31,7 @@ bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
     //pBG->addChild( pCloud2 );
     
     CCParallaxNode* paraNode = CCParallaxNode::create();
-    CCSpriteBatchNode* pCoins = createCoin( Scene );
+    CCSpriteBatchNode* pCoins = createCoin( Scene, stageData );
     CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
     paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( 0, size.height * 0.5 ) );
     paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
@@ -43,31 +45,33 @@ bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
     paraNode->runAction( repeat );
     
     
-    CCLOG( "StageID: %d", StageID );
+    CCLOG( "StageID: %d", stageData->stageId );
     CCLOG( "StageTag: %d", StageTag );
     return true;
 }
 // コイン作成
-CCSpriteBatchNode* BackGround::createCoin( CCLayer* Scene )
+CCSpriteBatchNode* BackGround::createCoin( CCLayer* Scene, StageData *stageData )
 {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     // コイン画像をCCSpriteBatchNodeに登録
     CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/coin/goldCoin5.png" );
     // シーンにバッチノードを追加
-    float x = 0;
+//    float x = 0;
     //Scene->addChild( pBatchNode );
-    for ( int i=0; i < 100; i++ )
+    for ( int i=0; i < stageData->coinList->count(); i++ )
     {
         CCSprite* sprite = CCSprite::createWithTexture( pBatchNode->getTexture() );
         // コインの座標を設定
         // @todo なにか情報を受け取って情報を作成する
         //float x = CCRANDOM_0_1()*size.width;
-        x += 50;
+        int x = ((CoinData*)stageData->coinList->objectAtIndex(i))->x;
         //float y = CCRANDOM_0_1()*size.height*0.7 + size.height*0.3;
-        float y = size.height*0.3;
+        int y = ((CoinData*)stageData->coinList->objectAtIndex(i))->y;
         sprite->setPosition( ccp( x, y ) );
         // スプライトをバッチノードに追加する
-        pBatchNode->addChild( sprite );
+        pBatchNode->addChild(sprite, 10, tag_coin_base + i);
+        
+        CCLOG("x:%d", x);
         
         // ランダムな時間でフェードアウト
         //CCFadeOut* fade = CCFadeOut::create( CCRANDOM_0_1()*10.0f );
