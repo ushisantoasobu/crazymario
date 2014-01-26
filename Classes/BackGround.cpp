@@ -33,8 +33,9 @@ bool BackGround::createStage( CCLayer* Scene, int StageID, int StageTag )
     CCSpriteBatchNode* pCoins = createCoin( Scene );
     //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
     //pSky->setTag( StageTag );
-
-    CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
+    CCString* str = CCString::createWithFormat( "ui/groundStage%03d.tmx", StageID );
+    CCTMXTiledMap* pGround = CCTMXTiledMap::create( str->getCString() );
+    CCLOG( "w: %f, h: %f", pGround->getMapSize().width * pGround->getTileSize().width, pGround->getMapSize().height * pGround->getTileSize().height );
     paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
     paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
     paraNode->addChild( pGround, 2, ccp( 1.0f, 0 ), ccp( -size.width * 0.5, 0 ) );
