@@ -16,7 +16,8 @@ USING_NS_CC;
 class BackGround
 {
 public:
-    static bool createStage( CCLayer* Scene, int StageID );
+    static bool createStage( CCLayer* Scene, int StageID, int StageTag );
+    static CCSpriteBatchNode* createCoin( CCLayer* Scene );
 };
 
 #endif /* defined(__crazymario1__BackGround__) */
