@@ -43,7 +43,7 @@ void GameScene::makeBackground()
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, 1 );
+    BackGround::createStage( this, 1, tag_background );
 }
 
 // マリオ移動や当り判定
