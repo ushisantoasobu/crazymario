@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "AppMacros.h"
 
 USING_NS_CC;
 
@@ -19,7 +20,36 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     pDirector->setOpenGLView(pEGLView);
 	
-    // turn on display FPS
+    // デザインサイズの設定
+    pEGLView->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, kResolutionNoBorder);
+    
+    CCSize frameSize = pEGLView->getFrameSize();
+    
+    std::vector<std::string> searchPath;
+    
+    if (frameSize.height > mediumResource.size.height)
+    {
+        // [L]ディレクトリのソースを使用
+        searchPath.push_back(largeResource.directory);
+        pDirector->setContentScaleFactor(MIN(largeResource.size.height / designResolutionSize.height, largeResource.size.width / designResolutionSize.width));
+    }
+    else if (frameSize.height > smallResource.size.height)
+    {
+        // [M]ディレクトリのリソースを使用
+        searchPath.push_back(mediumResource.directory);
+        pDirector->setContentScaleFactor(MIN(mediumResource.size.height / designResolutionSize.height, mediumResource.size.width / designResolutionSize.width));
+    }
+    else
+    {
+        // [S]ディレクトリのリソースを使用
+        searchPath.push_back(smallResource.directory);
+        pDirector->setContentScaleFactor(MIN(smallResource.size.height / designResolutionSize.height, smallResource.size.width / designResolutionSize.width));
+    }
+    
+    // リソースディレクトリを指定
+    CCFileUtils::sharedFileUtils()->setSearchPaths(searchPath);
+    
+    // turn on display FPS for debug
     pDirector->setDisplayStats(true);
 
     // set FPS. the default value is 1.0/60 if you don't call this
