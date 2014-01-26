@@ -16,4 +16,4 @@ static cocos2d::CCSize designResolutionSize = cocos2d::CCSizeMake(1024, 768);
 
 #define LEVEL_FONT_SIZE (cocos2d::sharedOpenGLView()->getDesignResolutionSize().wifth / mediumResource.size.width * 48)
 
-#endif __APPMACROS_H__
+#endif //__APPMACROS_H__
