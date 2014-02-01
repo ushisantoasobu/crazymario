@@ -10,7 +10,7 @@ USING_NS_CC;
 //USING_NS_CC_EXT;
 
 enum Tag {
-    tag_background,
+    tag_background = 4444,
     tag_crazyMario,
     tag_crazyMarioJump,
     tag_score_label,
@@ -21,14 +21,17 @@ class GameScene : public CCLayer {
 private:
     int stageId;
     float marioPosition;
+    CCSpriteBatchNode* coins;
+    CCSpriteBatchNode* enemies;
     
     void makeBackground(StageData* stageData);
     void makeMario();
+    CCSpriteBatchNode* makeCoins(StageData* stageData);
+    CCSpriteBatchNode* makeEnemies(StageData* stageData);
     cocos2d::extension::Json* constructStage();
     void moveMario(float fDelta);
     bool checkCollision();
     void gameOver();
-    void gotoGameOver();
     void createScoreLabel();
     void updateScoreLabel();
     

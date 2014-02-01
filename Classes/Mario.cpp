@@ -8,6 +8,7 @@ void Mario::createMario(cocos2d::CCLayer* gameScene, int stageId, int tagId) {
     CCSprite* marioSprite = CCSprite::create("mario/mario1.png");
     marioSprite->setScale(0.5);
     marioSprite->setPosition(ccp( size.width * 0.1, size.height * 0.41 ) );
+    //marioSprite->setPosition(ccp( 0, 0 ) );
     marioSprite->setTag(tagId);
     gameScene->addChild(marioSprite);
 }
@@ -29,11 +30,5 @@ void Mario::jumpMario(CCLayer* gameScene, int stageId, int tagId, int marioJumpT
     int moveX = 0;
     int moveY = 0;
     marioSprite->runAction(CCJumpBy::create(1.0, ccp(moveX, moveY), 300, 1));
-}
-
-void Mario::die(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag){
-    gameScene->removeChildByTag(tagId);
-    CCParticleSystemQuad* p = CCParticleSystemQuad::create("particle/dead.plist");
-    gameScene->addChild(p);
 }
 

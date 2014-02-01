@@ -14,7 +14,6 @@ public:
     static void createMario(cocos2d::CCLayer* gameScene, int stageId, int tagId);
     static void moveMario(CCLayer* gameScene, int stageId, int tagId, int marioMoveTag);
     static void jumpMario(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag);
-    static void die(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag);
     //~Mario();
 };
 

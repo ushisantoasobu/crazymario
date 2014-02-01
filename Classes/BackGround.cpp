@@ -11,13 +11,26 @@
 #include "GameScene.h"
 
 // ステージ作成
-bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag )
+BackGround* BackGround::createStage(StageData *stageData)
+{
+    BackGround *backGround = new BackGround();
+    if (backGround && backGround->init())
+    {
+        backGround->autorelease();
+        backGround->setStageData(stageData);
+        return backGround;
+    }
+    CC_SAFE_DELETE(backGround);
+    return NULL;
+}
+
+void BackGround::setStageData(StageData *stageData)
 {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     
     // 背景を生成
     CCSprite* pBG = CCSprite::create( "bgimage/stage0001.png" );
-    pBG->setTag( StageTag );
+//    pBG->setTag( StageTag );
     //pBG->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
     //Scene->addChild( pBG, 0, StageTag );
     
@@ -31,30 +44,33 @@ bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag
     //pCloud2->setScale( 0.6 );
     //pBG->addChild( pCloud2 );
     
-    CCParallaxNode* paraNode = CCParallaxNode::create();
-    CCSpriteBatchNode* pCoins = createCoin( Scene, stageData );
+    paraNode = CCParallaxNode::create();
+    //pCoins = createCoin( stageData );
     //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
     //pSky->setTag( StageTag );
 
     CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
     paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
-    paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
+    //paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
     paraNode->addChild( pGround, 2, ccp( 1.0f, 0 ), ccp( -size.width * 0.5, 0 ) );
     paraNode->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
-    Scene->addChild( paraNode );
+    this->addChild( paraNode );
     
-    CCMoveBy* move = CCMoveBy::create( 10.0f, ccp( -size.width / 2, 0 ) );
-    CCSequence* seq = (CCSequence*)CCSequence::create( move, NULL );
-    CCRepeatForever* repeat = CCRepeatForever::create( seq );
-    paraNode->runAction( repeat );
-    
-    
-    CCLOG( "StageID: %d", stageData->stageId );
-    CCLOG( "StageTag: %d", StageTag );
-    return true;
+//    CCMoveBy* move = CCMoveBy::create( 5.0f, ccp( -size.width / 2, 0 ) );
+//    CCSequence* seq = (CCSequence*)CCSequence::create( move, NULL );
+//    CCRepeatForever* repeat = CCRepeatForever::create( seq );
+//    paraNode->runAction( repeat );
 }
+
+
+void BackGround::goAhead()
+{
+    paraNode->setPosition(ccp(paraNode->getPositionX() - 2, paraNode->getPositionY()));
+}
+
+
 // コイン作成
-CCSpriteBatchNode* BackGround::createCoin( CCLayer* Scene, StageData *stageData )
+CCSpriteBatchNode* BackGround::createCoin( StageData *stageData )
 {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     // コイン画像をCCSpriteBatchNodeに登録

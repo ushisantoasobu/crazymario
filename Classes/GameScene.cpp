@@ -3,6 +3,8 @@
 #include "Mario.h"
 #include "GameUtil.h"
 #include "UserStatus.h"
+#include "CoinData.h"
+#include "EnemyData.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -32,6 +34,12 @@ bool GameScene::init() {
     
     // marioの配置
     makeMario();
+    
+    //
+    coins = makeCoins(stageData);
+    
+    //
+    enemies = makeEnemies(stageData);
     
     // enemy & coinの配置マスタ情報取得
     cocos2d::extension::Json* json = constructStage();
@@ -102,20 +110,83 @@ void GameScene::makeBackground(StageData* stageData)
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, stageData, tag_background );
+    BackGround *bg = BackGround::createStage(stageData);
+    this->addChild(bg, 0, tag_background);
+}
+
+CCSpriteBatchNode* GameScene::makeCoins(StageData* stageData)
+{
+    // コイン画像をCCSpriteBatchNodeに登録
+    CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/coin/goldCoin5.png" );
+    
+    // シーンにバッチノードを追加
+    for ( int i=0; i < stageData->coinList->count(); i++ )
+    {
+        CCSprite* sprite = CCSprite::createWithTexture( pBatchNode->getTexture() );
+        // コインの座標を設定
+        int x = ((CoinData*)stageData->coinList->objectAtIndex(i))->x;
+        int y = ((CoinData*)stageData->coinList->objectAtIndex(i))->y;
+        sprite->setPosition( ccp( x, y ) );
+        
+        // スプライトをバッチノードに追加する
+        pBatchNode->addChild(sprite, 10, tag_coin_base + i);
+    }
+    
+    this->addChild(pBatchNode);
+    
+    return pBatchNode;
+}
+
+CCSpriteBatchNode* GameScene::makeEnemies(StageData* stageData)
+{
+    // コイン画像をCCSpriteBatchNodeに登録
+    CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/enemy/enemy1.png" );
+    
+    // シーンにバッチノードを追加
+    for ( int i=0; i < stageData->enemyList->count(); i++ )
+    {
+        CCSprite* sprite = CCSprite::createWithTexture( pBatchNode->getTexture() );
+        // コインの座標を設定
+        int x = ((EnemyData*)stageData->enemyList->objectAtIndex(i))->x;
+        int y = ((EnemyData*)stageData->enemyList->objectAtIndex(i))->y;
+        sprite->setPosition( ccp( x, y ) );
+        
+        // スプライトをバッチノードに追加する
+        pBatchNode->addChild(sprite, 12, tag_coin_base + i);
+    }
+    
+    this->addChild(pBatchNode);
+    
+    return pBatchNode;
 }
 
 // マリオ移動や当り判定
 void GameScene::moveMario(float fDelta)
 {
-    marioPosition += fDelta * 10;
+    int speed = 10;
+    int enemySpeed = 14;
+    
+    int coinCount = coins->getChildren()->count();
+    for (int i = 0; i < coinCount; i++) {
+        CCSprite* coin = (CCSprite*)coins->getChildren()->objectAtIndex(i);
+        coin->setPosition(ccp(coin->getPositionX() - speed, coin->getPositionY()));
+    }
+    
+    int enemyCount = enemies->getChildren()->count();
+    for (int i = 0; i < enemyCount; i++) {
+        CCSprite* enemy = (CCSprite*)enemies->getChildren()->objectAtIndex(i);
+        enemy->setPosition(ccp(enemy->getPositionX() - enemySpeed, enemy->getPositionY()));
+    }
+    
+    BackGround *bg = (BackGround *) this->getChildByTag(tag_background);
+    bg->goAhead();
     
     //CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
     //pMario->setPositionX(marioPosition);
     
-    CCLog("marioPosition: %f", marioPosition);
+    //CCLog("marioPosition: %f", marioPosition);
     
-    
+    /*
     if (this->checkCollision()) {
         // ゲームオーバー処理
         CCLog("Game over..");
@@ -123,43 +194,60 @@ void GameScene::moveMario(float fDelta)
     } else {
         Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
     }
+    */
+    this->checkCollision();
+    
+    Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
 }
 
 // 衝突判定
 bool GameScene::checkCollision()
 {
-    int collision = false;
-//    if (rand() % 100 == 1) {
-//        collision = true;
-//    }
-    return collision;
+    CCLOG("---------------------------");
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
+    CCRect marioRect = CCRectMake(pMario->getPositionX(),
+                                  pMario->getPositionY(),
+                                  pMario->getContentSize().width / 4 + 4,
+                                  pMario->getContentSize().height / 2 + 4); //少し多めにとっておくとゲーム的にいいかも
+    CCArray* list = CCArray::create();
+    list->retain();
+    
+    CCArray *arr = coins->getChildren();
+    if (arr == NULL) {
+        return false;
+    }
+    list->addObjectsFromArray(arr);
+    for (int i = 0; i < list->count(); i++) {
+        CCSprite *obj = (CCSprite *) list->objectAtIndex(i);
+        obj->getTag();
+        CCRect objRect = CCRectMake(obj->getPositionX(),
+                                    obj->getPositionY(),
+                                    obj->getContentSize().width,
+                                    obj->getContentSize().height);
+        if(obj->getTag() > tag_coin_base){
+            /**/
+            if (marioRect.intersectsRect(objRect) ) {
+//                this->unschedule(schedule_selector(GameScene::moveMario));
+//                this->gameOver();
+                obj->removeFromParentAndCleanup(true);
+                UserStatus::sharedUserStatus()->score += 100;
+                updateScoreLabel();
+                return false;
+            }
+            /* */
+
+        }
+    }
+    return false;
 }
 
 // ゲームオーバー処理
 void GameScene::gameOver()
 {
-    //スケジュールとめる
-    this->unschedule(schedule_selector(GameScene::moveMario));
-    
-    //マリオ死亡アニメーション
-    Mario::die(this, 1, tag_crazyMario, tag_crazyMarioJump);
-    
-    this->schedule(schedule_selector(GameScene::gotoGameOver), 2);
-    
     // TODO: ゲームオーバー画面に飛ばす？？
-    //CCScene* gameScene = (CCScene*)GameScene::create();
-    //CCDirector::sharedDirector()->replaceScene(gameScene);
-}
-
-void GameScene::gotoGameOver()
-{
-    this->unschedule(schedule_selector(GameScene::gotoGameOver));
-    
-    CCLOG("gameoverシーンへ遷移");
-    
-    // TODO: ゲームオーバー画面に飛ばす？？
-    //CCScene* gameScene = (CCScene*)GameScene::create();
-    //CCDirector::sharedDirector()->replaceScene(gameScene);
+    CCScene* gameScene = (CCScene*)GameScene::create();
+    CCDirector::sharedDirector()->replaceScene(gameScene);
 }
 
 // タップが開始されたときの処理
@@ -189,7 +277,7 @@ void GameScene::createScoreLabel()
     text->setAnchorPoint(ccp(0.0, 1.0));
     text->setHorizontalAlignment(kCCTextAlignmentLeft);
     text->setPosition(CCPointMake(winSize.width * 0.05, winSize.height * 0.92));
-    this->addChild(text, 100, tag_score_label);
+    this->addChild(text, 1, tag_score_label);
 }
 
 void GameScene::updateScoreLabel()
