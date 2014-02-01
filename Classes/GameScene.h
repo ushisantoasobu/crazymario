@@ -10,7 +10,7 @@ USING_NS_CC;
 //USING_NS_CC_EXT;
 
 enum Tag {
-    tag_background = 4444,
+    tag_background,
     tag_crazyMario,
     tag_crazyMarioJump,
     tag_score_label,
@@ -32,6 +32,7 @@ private:
     void moveMario(float fDelta);
     bool checkCollision();
     void gameOver();
+    void gotoGameOver();
     void createScoreLabel();
     void updateScoreLabel();
     

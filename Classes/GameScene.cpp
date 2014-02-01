@@ -228,7 +228,6 @@ bool GameScene::checkCollision()
         if(obj->getTag() > tag_coin_base){
             /**/
             if (marioRect.intersectsRect(objRect) ) {
-//                this->unschedule(schedule_selector(GameScene::moveMario));
 //                this->gameOver();
                 obj->removeFromParentAndCleanup(true);
                 UserStatus::sharedUserStatus()->score += 100;
@@ -239,16 +238,39 @@ bool GameScene::checkCollision()
 
         }
     }
+    
     return false;
 }
 
 // ゲームオーバー処理
 void GameScene::gameOver()
 {
+    //スケジュールとめる
+    this->unschedule(schedule_selector(GameScene::moveMario));
+    
+    //マリオ死亡アニメーション
+    Mario::die(this, 1, tag_crazyMario, tag_crazyMarioJump);
+    
+    this->schedule(schedule_selector(GameScene::gotoGameOver), 2);
+    
     // TODO: ゲームオーバー画面に飛ばす？？
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
+}
+
+void GameScene::gotoGameOver()
+{
+    this->unschedule(schedule_selector(GameScene::gotoGameOver));
+    
+    CCLOG("gameoverシーンへ遷移");
+    
+    // TODO: ゲームオーバー画面に飛ばす？？
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
     CCScene* gameScene = (CCScene*)GameScene::create();
     CCDirector::sharedDirector()->replaceScene(gameScene);
 }
+
 
 // タップが開始されたときの処理
 bool GameScene::ccTouchBegan(CCTouch* pTouch, CCEvent* pEvent)
