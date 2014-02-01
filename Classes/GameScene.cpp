@@ -1,6 +1,10 @@
 #include "GameScene.h"
 #include "BackGround.h"
 #include "Mario.h"
+#include "GameUtil.h"
+#include "UserStatus.h"
+#include "CoinData.h"
+#include "EnemyData.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -20,8 +24,13 @@ bool GameScene::init() {
     stageId = 1;
     marioPosition = 0;
     
+    StageData* stageData = GameUtil::getGameData();
+    
+    //スコアラベルを作成する
+    createScoreLabel();
+    
     // 背景を作成する
-    makeBackground();
+    makeBackground(stageData);
     
     // marioの配置
     makeMario();
@@ -88,14 +97,14 @@ void GameScene::makeMario()
 }
 
 // 背景を作成する
-void GameScene::makeBackground()
+void GameScene::makeBackground(StageData* stageData)
 {
     // タップイベントを取得する
     setTouchEnabled(true);
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, 1, tag_background );
+    BackGround::createStage( this, stageData, tag_background );
 }
 
 // マリオ移動や当り判定
@@ -113,13 +122,12 @@ void GameScene::moveMario(float fDelta)
     {   // ゲームオーバー処理
         CCLog("Game over..");
         this->gameOver();
-    }
-    else
-    {
+    } else {
         if (this->checkCollision(2))
         {   // コイン取得処理
             
             // コイン削除処理
+            CCLog("Get coin!!");
         }
         
         if (!this->checkJumping())
@@ -132,7 +140,7 @@ void GameScene::moveMario(float fDelta)
 // ジャンプ判定
 bool GameScene::checkJumping()
 {
-    bool jumping = true;
+    bool jumping = false;
     
     
     // 床との設置判定
@@ -144,32 +152,48 @@ bool GameScene::checkJumping()
 bool GameScene::checkCollision(const int type)
 {
     // マリオ情報取得
+    CCSprite* marioSprite = (CCSprite*)this->getChildByTag(tag_crazyMario);
     
-    CCArray* target = CCArray::create();
+    CCParallaxNode* paraNode = (CCParallaxNode*)this->getChildByTag(tag_paranode);
+    CCNode* coinBatchNode = (CCNode*)paraNode->getChildByTag(tag_coinbatch);
+    CCNode* bgNode = (CCNode*)paraNode->getChildByTag(tag_background);
+    
+    CCArray* objectList = NULL;
+    StageData* stageData = GameUtil::getGameData();
+    bool collision = false;
+    CCRect marioRect = marioSprite->boundingBox();
+    CCRect bgRect = bgNode->boundingBox();
+    
+    CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
+    CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
+    CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
+    
     if (type == 1)
     {   // enemy情報取得
+        objectList = stageData->enemyList;
+        CCLog("check enemy!!");
     }
     else if (type == 2)
     {   // コイン情報取得
-        
+        objectList = stageData->coinList;
+        CCLog("check coin!!");
+        for (int i=0; i < objectList->count(); i++)
+        {
+            CCRect coinRect = ((CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i))->boundingBox();
+            coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), coinRect.getMidY(), coinRect.size.width, coinRect.size.height);
+            CCLog("coin%d : %f,%f,%f,%f", i, coinRect.getMinX(), coinRect.getMaxX(), coinRect.getMinY(), coinRect.getMaxY());
+            if (marioRect.intersectsRect(coinRect))
+            {
+                collision = true;
+                break;
+            }
+        }
     }
     else
     {   // それ以外は何もしない
+        return false;
     }
     
-    bool collision = false;
-    
-    CCSprite* pCoin = NULL;
-    CCObject* object = NULL;
-    CCARRAY_FOREACH(target, object)
-    {
-        pCoin = (CCSprite*)this->getChildByTag(10001);
-        
-    }
-    
-//    if (rand() % 100 == 1) {
-//        collision = true;
-//    }
     
     return collision;
 }
@@ -177,9 +201,28 @@ bool GameScene::checkCollision(const int type)
 // ゲームオーバー処理
 void GameScene::gameOver()
 {
+    //スケジュールとめる
+    this->unschedule(schedule_selector(GameScene::moveMario));
+    
+    //マリオ死亡アニメーション
+    Mario::die(this, 1, tag_crazyMario, tag_crazyMarioJump);
+    
+    this->schedule(schedule_selector(GameScene::gotoGameOver), 2);
+    
     // TODO: ゲームオーバー画面に飛ばす？？
-    CCScene* gameScene = (CCScene*)GameScene::create();
-    CCDirector::sharedDirector()->replaceScene(gameScene);
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
+}
+
+void GameScene::gotoGameOver()
+{
+    this->unschedule(schedule_selector(GameScene::gotoGameOver));
+    
+    CCLOG("gameoverシーンへ遷移");
+    
+    // TODO: ゲームオーバー画面に飛ばす？？
+    //CCScene* gameScene = (CCScene*)GameScene::create();
+    //CCDirector::sharedDirector()->replaceScene(gameScene);
 }
 
 // タップが開始されたときの処理
@@ -199,4 +242,24 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     
     // TODO: ジャンプの処理呼び出し
     Mario::jumpMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+}
+
+void GameScene::createScoreLabel()
+{
+    cocos2d::CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+    
+    CCLabelTTF *text = CCLabelTTF::create("score:0", "American Typewriter", 64);
+    text->setAnchorPoint(ccp(0.0, 1.0));
+    text->setHorizontalAlignment(kCCTextAlignmentLeft);
+    text->setPosition(CCPointMake(winSize.width * 0.05, winSize.height * 0.92));
+    this->addChild(text, 100, tag_score_label);
+}
+
+void GameScene::updateScoreLabel()
+{
+    CCLabelTTF *text = (CCLabelTTF *)this->getChildByTag(tag_score_label);    
+    int score = UserStatus::sharedUserStatus()->score;
+    
+    CCString *str = CCString::createWithFormat("score:%d", score);
+    text->setString(str->getCString());
 }

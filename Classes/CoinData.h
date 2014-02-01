@@ -20,7 +20,7 @@ enum coinType
     coinTypeLarge
 };
 
-class CoinData : public CCObject
+class CoinData : public CCNode
 {
 public:
 

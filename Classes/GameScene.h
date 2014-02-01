@@ -4,29 +4,39 @@
 #include "cocos2d.h"
 #include "cocos-ext.h"
 #include "spine/Json.h"
+#include "StageData.h"
 
 USING_NS_CC;
 //USING_NS_CC_EXT;
+
+enum Tag {
+    tag_background,
+    tag_crazyMario,
+    tag_crazyMarioJump,
+    tag_score_label,
+    tag_paranode,
+    tag_coinbatch,
+    tag_coin_base = 10000
+};
 
 class GameScene : public CCLayer {
 private:
     int stageId;
     float marioPosition;
-    enum Tag {
-        tag_background,
-        tag_crazyMario,
-        tag_crazyMarioJump
-    };
     
-    void makeBackground();
+    void makeBackground(StageData* stageData);
     void makeMario();
     cocos2d::extension::Json* constructStage();
     void moveMario(float fDelta);
     bool checkCollision(const int type);
     bool checkJumping();
     void gameOver();
+    void gotoGameOver();
+    void createScoreLabel();
+    void updateScoreLabel();
     
 public:
+    
     virtual bool init();
     static CCScene* scene();
     CREATE_FUNC(GameScene);
