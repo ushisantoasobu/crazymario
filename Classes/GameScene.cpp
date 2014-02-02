@@ -104,7 +104,9 @@ void GameScene::makeBackground(StageData* stageData)
     setTouchMode(kCCTouchesOneByOne);
     
     // TODO: ここは背景担当が作ったメソッドを入れる??
-    BackGround::createStage( this, stageData, tag_background );
+    BackGround *bg = BackGround::createStage();
+    this->addChild(bg, 0, tag_background);
+    bg->setStageData( this, stageData, tag_background );
 }
 
 // マリオ移動や当り判定
@@ -157,9 +159,10 @@ bool GameScene::checkCollision(const int type)
     // マリオ情報取得
     CCSprite* marioSprite = (CCSprite*)this->getChildByTag(tag_crazyMario);
     
-    CCParallaxNode* paraNode = (CCParallaxNode*)this->getChildByTag(tag_paranode);
+    BackGround *bg = (BackGround *) this->getChildByTag(tag_background);
+    CCParallaxNode* paraNode = bg->paraNode;
     CCNode* coinBatchNode = (CCNode*)paraNode->getChildByTag(tag_coinbatch);
-    CCNode* bgNode = (CCNode*)paraNode->getChildByTag(tag_background);
+    CCNode* bgNode = this->getChildByTag(tag_background);
     CCNode* groundNode = (CCNode*)paraNode->getChildByTag(tag_ground);
     
     CCArray* objectList = NULL;
@@ -168,11 +171,13 @@ bool GameScene::checkCollision(const int type)
     CCRect marioRect = marioSprite->boundingBox();
     //marioRect.setRect(marioRect.getMinX(), marioRect.getMinY(), marioRect.size.width - 10, marioRect.size.height - 10);
     CCRect bgRect = bgNode->boundingBox();
-    CCRect groundRect = groundNode->boundingBox();
+    //CCRect groundRect = groundNode->boundingBox();
     
     CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
     CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
     CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
+    
+    bg->goAhead(10);
     
     if (type == 1)
     {   // enemy情報取得
