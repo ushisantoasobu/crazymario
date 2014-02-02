@@ -5,6 +5,9 @@
 #include "UserStatus.h"
 #include "CoinData.h"
 #include "EnemyData.h"
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -19,6 +22,15 @@ bool GameScene::init() {
         return false;
     }
     
+    // 効果音preload
+    SimpleAudioEngine::sharedEngine()->preloadEffect( "bgm/getcoin.wav" );
+    
+    // BGM再生
+    if ( !SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying() )
+    {
+        SimpleAudioEngine::sharedEngine()->playBackgroundMusic( "bgm/waltz.mp3", true );
+    }
+
     // 変数を初期化
     srand((unsigned)time(NULL));
     stageId = 1;
@@ -124,7 +136,10 @@ void GameScene::moveMario(float fDelta)
         this->gameOver();
     } else {
         if (this->checkCollision(2))
-        {   // コイン取得処理
+        {   // 効果音再生
+            unsigned int soundId = SimpleAudioEngine::sharedEngine()->playEffect("bgm/getcoin.wav");
+            
+            //SimpleAudioEngine::sharedEngine()->stopEffect(soundId);
             
             // コイン削除処理
             CCLog("Get coin!!");
@@ -235,6 +250,7 @@ void GameScene::gameOver()
 void GameScene::gotoGameOver()
 {
     this->unschedule(schedule_selector(GameScene::gotoGameOver));
+    SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
     
     CCLOG("gameoverシーンへ遷移");
     
