@@ -7,6 +7,7 @@ void Mario::createMario(cocos2d::CCLayer* gameScene, int stageId, int tagId) {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     CCSprite* marioSprite = CCSprite::create("mario/mario1.png");
     marioSprite->setScale(0.5);
+    marioSprite->setAnchorPoint(ccp(0.5, 0.5));
     marioSprite->setPosition(ccp( size.width * 0.1, size.height * 0.41 ) );
     marioSprite->setTag(tagId);
     gameScene->addChild(marioSprite);

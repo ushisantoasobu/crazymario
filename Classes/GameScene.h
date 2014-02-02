@@ -10,7 +10,7 @@ USING_NS_CC;
 //USING_NS_CC_EXT;
 
 enum Tag {
-    tag_background,
+    tag_background = 1,
     tag_crazyMario,
     tag_crazyMarioJump,
     tag_score_label,
@@ -24,6 +24,8 @@ class GameScene : public CCLayer {
 private:
     int stageId;
     float marioPosition;
+    const int MAX_JUMP_COUNT = 1;
+    int currentJumpCount = 0;
     
     void makeBackground(StageData* stageData);
     void makeMario();
@@ -35,6 +37,7 @@ private:
     void gotoGameOver();
     void createScoreLabel();
     void updateScoreLabel();
+    void processMarioJump(CCNode* groundNode, CCSprite* marioSprite);
     
 public:
     
