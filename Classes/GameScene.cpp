@@ -1,3 +1,8 @@
+/*
+ * @author Kojima Akira
+ *
+ */
+
 #include "GameScene.h"
 #include "BackGround.h"
 #include "Mario.h"
