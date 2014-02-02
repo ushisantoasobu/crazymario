@@ -66,13 +66,13 @@ bool GameScene::init() {
         for (int i = 0; i < cocos2d::extension::Json_getSize(coinList); i++)
         {
             cocos2d::extension::Json* coin = cocos2d::extension::Json_getItemAt(coinList, i);
-            CCLOG("coin[%d]:%d", i, cocos2d::extension::Json_getInt(coin, "x", 1));
+            //CCLOG("coin[%d]:%d", i, cocos2d::extension::Json_getInt(coin, "x", 1));
         }
         cocos2d::extension::Json* enemyList = cocos2d::extension::Json_getItem(stage, "enemyList");
         for (int j = 0; j < cocos2d::extension::Json_getSize(enemyList); j++)
         {
             cocos2d::extension::Json* enemy = cocos2d::extension::Json_getItemAt(enemyList, j);
-            CCLOG("enemy[%d]:%d", j, cocos2d::extension::Json_getInt(enemy, "x", 1));
+            //CCLOG("enemy[%d]:%d", j, cocos2d::extension::Json_getInt(enemy, "x", 1));
         }
     }
     else
@@ -137,11 +137,12 @@ void GameScene::moveMario(float fDelta)
     //CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
     //pMario->setPositionX(marioPosition);
     
-    CCLog("marioPosition: %f", marioPosition);
+    //CCLog("marioPosition: %f", marioPosition);
     
     
     if (this->checkCollision(1))
     {   // ゲームオーバー処理
+        //CCLog("Game over..");
         this->gameOver();
     } else {
         if (this->checkCollision(2))
@@ -151,11 +152,11 @@ void GameScene::moveMario(float fDelta)
             //SimpleAudioEngine::sharedEngine()->stopEffect(soundId);
             
             // コイン削除処理
-            CCLog("Get coin!!");
+            //CCLog("Get coin!!");
             updateScoreLabel();
         }
         
-        if (!this->checkJumping())
+        if (!this->checkJumping() && currentJumpCount == 0)
         {
             Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
         }
@@ -197,6 +198,18 @@ bool GameScene::checkJumping()
     return jumping;
 }
 
+void GameScene::processMarioJump(CCNode* groundNode, CCSprite* marioSprite) {    
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    // マリオ地面
+    int marioY = size.height * 0.41;
+    CCPoint currentPosition = marioSprite->getPosition();
+    int currentY = currentPosition.y;
+    if (marioY == currentY) {
+        currentJumpCount = 0;
+        CCLog("jimen");
+    }
+}
+
 // 衝突判定
 bool GameScene::checkCollision(const int type)
 {
@@ -209,7 +222,10 @@ bool GameScene::checkCollision(const int type)
     CCParallaxNode* paraNode = bg->paraNode;
     CCNode* coinBatchNode = (CCNode*)paraNode->getChildByTag(tag_coinbatch);
     CCNode* bgNode = this->getChildByTag(tag_background);
-    CCNode* groundNode = (CCNode*)paraNode->getChildByTag(tag_ground);
+    //CCNode* groundNode = (CCNode*)paraNode->getChildByTag(tag_ground);
+    CCNode* groundNode = (CCNode*) bg->paraNode->getChildByTag(555);
+    
+    processMarioJump(groundNode, marioSprite);
     
     CCArray* objectList = NULL;
     StageData* stageData = GameUtil::getGameData();
@@ -219,9 +235,9 @@ bool GameScene::checkCollision(const int type)
     CCRect bgRect = bgNode->boundingBox();
     //CCRect groundRect = groundNode->boundingBox();
     
-    CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
-    CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
-    CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
+    //CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
+    //CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
+    //CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
     
     bg->goAhead(4);
     
@@ -235,6 +251,8 @@ bool GameScene::checkCollision(const int type)
     
     if (type == 1)
     {   // enemy情報取得
+        objectList = stageData->enemyList;
+        //CCLog("check enemy!!");
         CCArray* list = CCArray::create();
         list->retain();
         
@@ -265,21 +283,21 @@ bool GameScene::checkCollision(const int type)
     else if (type == 2)
     {   // コイン情報取得
         objectList = stageData->coinList;
-        CCLog("check coin!!");
+        //CCLog("check coin!!");
         for (int i=0; i < objectList->count(); i++)
         {
             CCSprite* coinSprite = (CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i);
             //CCRect coinRect = ((CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i))->boundingBox();
             if (coinSprite == 0)
             {
-                CCLog("coinSprite is already deleted!!");
+                //CCLog("coinSprite is already deleted!!");
                 continue;
             }
             CCRect coinRect = coinSprite->boundingBox();
             
             coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), coinRect.getMidY() + size.height * 0.4, coinRect.size.width, coinRect.size.height);
             //coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), ((CoinData*)objectList->objectAtIndex(i))->y, coinRect.size.width, coinRect.size.height);
-            CCLog("coin%d : %f,%f,%f,%f", i, coinRect.getMinX(), coinRect.getMaxX(), coinRect.getMinY(), coinRect.getMaxY());
+            //CCLog("coin%d : %f,%f,%f,%f", i, coinRect.getMinX(), coinRect.getMaxX(), coinRect.getMinY(), coinRect.getMaxY());
             if (marioRect.intersectsRect(coinRect))
             {
                 collision = true;
@@ -340,10 +358,13 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     CCDirector* pDirector = CCDirector::sharedDirector();
     CCPoint touchPoint = pDirector->convertToGL(pTouch->getLocationInView());
     
-    CCLog("x: %f, y: %f", touchPoint.x, touchPoint.y);
+    //CCLog("x: %f, y: %f", touchPoint.x, touchPoint.y);
     
     // TODO: ジャンプの処理呼び出し
-    Mario::jumpMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+    if (currentJumpCount < MAX_JUMP_COUNT) {
+        Mario::jumpMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+        currentJumpCount++;
+    }
 }
 
 void GameScene::createScoreLabel()
