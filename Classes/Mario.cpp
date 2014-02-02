@@ -3,6 +3,11 @@
 
 USING_NS_CC;
 
+/**
+ * BY ムンク
+ *
+ */
+
 void Mario::createMario(cocos2d::CCLayer* gameScene, int stageId, int tagId) {
     CCSize size = CCDirector::sharedDirector()->getWinSize();
     CCSprite* marioSprite = CCSprite::create("mario/mario1.png");

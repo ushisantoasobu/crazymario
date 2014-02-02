@@ -1,3 +1,7 @@
+/*
+ * @author Kojima Akira
+ */
+
 #ifndef __GAMESCENE__H
 #define __GAMESCENE__H
 

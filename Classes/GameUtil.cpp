@@ -47,9 +47,6 @@ StageData* GameUtil::getGameData()
         coinData->x = Json_getInt(jsonCoinData, "x", 0);
         coinData->y = Json_getInt(jsonCoinData, "y", 0);
         coinData->type = (coinType)Json_getInt(jsonCoinData, "type", 0);
-        CCLOG("name: %d", coinData->x);
-        CCLOG("name: %d", coinData->y);
-        CCLOG("name: %d", coinData->type);
         stageData->coinList->addObject(coinData);
         coinData->release();
     }
@@ -62,9 +59,6 @@ StageData* GameUtil::getGameData()
         enemyData->x = Json_getInt(jsonEnemyData, "x", 0);
         enemyData->y = Json_getInt(jsonEnemyData, "y", 0);
         enemyData->type = (enemyType)Json_getInt(jsonEnemyData, "type", 0);
-        CCLOG("name: %d", enemyData->x);
-        CCLOG("name: %d", enemyData->y);
-        CCLOG("name: %d", enemyData->type);
         stageData->enemyList->addObject(enemyData);
         enemyData->release();
     }

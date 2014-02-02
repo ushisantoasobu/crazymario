@@ -2,6 +2,11 @@
 #include "Animation.h"
 USING_NS_CC;
 
+/**
+ * BY ムンク
+ *
+ */
+
 Enemy::Enemy(){}
 
 CCSprite* Enemy::createEnemy(int tagId, int x, int y) {
