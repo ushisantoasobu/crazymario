@@ -30,6 +30,10 @@ CCFiniteTimeAction* Animation::resultAnimation(CCObject* target, SEL_CallFunc se
     return CCSequence::create(scaleUp, delay, func, NULL);
 }
 
+/**
+ * BY ムンク
+ *
+ */
 CCFiniteTimeAction* Animation::marioAction() {
     CCArray *animFrames = CCArray::create();
     CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
@@ -53,6 +57,10 @@ CCFiniteTimeAction* Animation::marioAction() {
     return CCAnimate::create(animation);
 }
 
+/**
+ * BY ムンク
+ *
+ */
 CCFiniteTimeAction* Animation::enemyJumpAction(int moveX, int moveY) {
     return CCJumpBy::create(5.0, ccp(moveX, moveY), 300, 1);
 }

@@ -4,6 +4,11 @@
 #include "cocos2d.h"
 USING_NS_CC;
 
+/**
+ * BY ムンク
+ *
+ */
+
 class Enemy : public CCSprite {
 private:
     int x;

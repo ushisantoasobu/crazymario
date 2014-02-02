@@ -103,16 +103,6 @@ cocos2d::extension::Json* GameScene::constructStage()
 // マリオを作成する
 void GameScene::makeMario()
 {
-    //CCSize size = CCDirector::sharedDirector()->getWinSize();
-    
-    // ここはマリオ担当が作ったメソッドを入れる
-//    CCSprite* pMario = CCSprite::create("cloud.png");
-//    pMario->setPosition(ccp(size.width * 0.1, size.height * 0.3));
-//    pMario->setScale(0.2);
-//    pMario->setTag(tag_crazyMario);
-//    this->addChild(pMario);
-//    
-//    marioPosition = pMario->getPositionX();
     Mario::createMario(this, 1, tag_crazyMario);
 }
 
@@ -198,9 +188,13 @@ bool GameScene::checkJumping()
     return jumping;
 }
 
+/**
+ * BY ムンク
+ * 
+ */
 void GameScene::processMarioJump(CCNode* groundNode, CCSprite* marioSprite) {    
     CCSize size = CCDirector::sharedDirector()->getWinSize();
-    // マリオ地面
+    // マリオ地面int　比較を行う。
     int marioY = size.height * 0.41;
     CCPoint currentPosition = marioSprite->getPosition();
     int currentY = currentPosition.y;
