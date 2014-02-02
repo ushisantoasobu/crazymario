@@ -17,13 +17,16 @@ USING_NS_CC;
 class BackGround : public CCSprite
 {
 private:
+    int currentDiff;
+    int currentGroundIndex;
     virtual void setStageData(StageData *stageData);
     virtual CCSpriteBatchNode* createCoin( StageData* stageId );
+    void addNewGround();
     
 public:
     CCParallaxNode* paraNode;
     CCSpriteBatchNode* pCoins;
-    virtual void goAhead();
+    virtual void goAhead(int diff);
     static BackGround* createStage(StageData *stageData);
 };
 

@@ -49,23 +49,53 @@ void BackGround::setStageData(StageData *stageData)
     //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
     //pSky->setTag( StageTag );
 
-    CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
-    paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
-    //paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
-    paraNode->addChild( pGround, 2, ccp( 1.0f, 0 ), ccp( -size.width * 0.5, 0 ) );
+
+    paraNode->addChild( pBG, 1, ccp( 0.0f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
+    
+    //地面を初期化の時点で２つ入れる
+    addNewGround();
+    addNewGround();
+    
+    CCTMXTiledMap* pGround2 = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
+    
     paraNode->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
     this->addChild( paraNode );
-    
-//    CCMoveBy* move = CCMoveBy::create( 5.0f, ccp( -size.width / 2, 0 ) );
-//    CCSequence* seq = (CCSequence*)CCSequence::create( move, NULL );
-//    CCRepeatForever* repeat = CCRepeatForever::create( seq );
-//    paraNode->runAction( repeat );
 }
 
 
-void BackGround::goAhead()
+void BackGround::goAhead(int diff)
 {
-    paraNode->setPosition(ccp(paraNode->getPositionX() - 2, paraNode->getPositionY()));
+    int w = 140 * 16; //"ui/groundStage001.tmx"からとった地面の一塊のwidth
+    currentDiff += diff;
+    paraNode->setPosition(ccp(paraNode->getPositionX() - diff, paraNode->getPositionY()));
+    if(w < currentDiff){
+        currentDiff = currentDiff - w;
+        addNewGround();
+    }
+}
+
+void BackGround::addNewGround()
+{
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
+    pGround->setTag(555);
+    paraNode->addChild(pGround,
+                       2,
+                       ccp( 1.0f, 0 ),
+                       ccp( -size.width * 0.5 + 2240 * currentGroundIndex, 0));
+    currentGroundIndex++;
+    
+    CCArray *arr = CCArray::create();
+    for (int i = 0; i < paraNode->getChildren()->count(); i++) {
+        if ( ((CCSprite*) paraNode->getChildren()->objectAtIndex(i))->getTag() == 555 ) {
+            arr->addObject(paraNode->getChildren()->objectAtIndex(i));
+        }
+    }
+    
+    if (arr->count() > 2) {
+        //先頭の地面削除
+        ((CCSprite*) arr->objectAtIndex(0))->removeFromParentAndCleanup(true);
+    }
 }
 
 

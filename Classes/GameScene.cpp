@@ -140,7 +140,7 @@ CCSpriteBatchNode* GameScene::makeCoins(StageData* stageData)
 CCSpriteBatchNode* GameScene::makeEnemies(StageData* stageData)
 {
     // コイン画像をCCSpriteBatchNodeに登録
-    CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/enemy/enemy1.png" );
+    CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/enemy/enemy2.png" );
     
     // シーンにバッチノードを追加
     for ( int i=0; i < stageData->enemyList->count(); i++ )
@@ -179,7 +179,7 @@ void GameScene::moveMario(float fDelta)
     }
     
     BackGround *bg = (BackGround *) this->getChildByTag(tag_background);
-    bg->goAhead();
+    bg->goAhead(speed);
     
     //CCSprite* pMario = (CCSprite*)this->getChildByTag(tag_crazyMario);
     //pMario->setPositionX(marioPosition);
