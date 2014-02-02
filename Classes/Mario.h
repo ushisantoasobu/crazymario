@@ -4,6 +4,11 @@
 #include "cocos2d.h"
 USING_NS_CC;
 
+/**
+ * BY ムンク
+ *
+ */
+
 class Mario : public CCSprite {
 private:
     CCSprite* mario;
