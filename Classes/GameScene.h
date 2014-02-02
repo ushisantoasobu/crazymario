@@ -16,6 +16,7 @@ enum Tag {
     tag_score_label,
     tag_paranode,
     tag_coinbatch,
+    tag_ground,
     tag_coin_base = 10000
 };
 

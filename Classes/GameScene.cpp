@@ -128,6 +128,7 @@ void GameScene::moveMario(float fDelta)
             
             // コイン削除処理
             CCLog("Get coin!!");
+            updateScoreLabel();
         }
         
         if (!this->checkJumping())
@@ -151,18 +152,23 @@ bool GameScene::checkJumping()
 // 衝突判定
 bool GameScene::checkCollision(const int type)
 {
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    
     // マリオ情報取得
     CCSprite* marioSprite = (CCSprite*)this->getChildByTag(tag_crazyMario);
     
     CCParallaxNode* paraNode = (CCParallaxNode*)this->getChildByTag(tag_paranode);
     CCNode* coinBatchNode = (CCNode*)paraNode->getChildByTag(tag_coinbatch);
     CCNode* bgNode = (CCNode*)paraNode->getChildByTag(tag_background);
+    CCNode* groundNode = (CCNode*)paraNode->getChildByTag(tag_ground);
     
     CCArray* objectList = NULL;
     StageData* stageData = GameUtil::getGameData();
     bool collision = false;
     CCRect marioRect = marioSprite->boundingBox();
+    //marioRect.setRect(marioRect.getMinX(), marioRect.getMinY(), marioRect.size.width - 10, marioRect.size.height - 10);
     CCRect bgRect = bgNode->boundingBox();
+    CCRect groundRect = groundNode->boundingBox();
     
     CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
     CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
@@ -179,12 +185,24 @@ bool GameScene::checkCollision(const int type)
         CCLog("check coin!!");
         for (int i=0; i < objectList->count(); i++)
         {
-            CCRect coinRect = ((CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i))->boundingBox();
-            coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), coinRect.getMidY(), coinRect.size.width, coinRect.size.height);
+            CCSprite* coinSprite = (CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i);
+            //CCRect coinRect = ((CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i))->boundingBox();
+            if (coinSprite == 0)
+            {
+                CCLog("coinSprite is already deleted!!");
+                continue;
+            }
+            CCRect coinRect = coinSprite->boundingBox();
+            
+            coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), coinRect.getMidY() + size.height * 0.4, coinRect.size.width, coinRect.size.height);
+            //coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), ((CoinData*)objectList->objectAtIndex(i))->y, coinRect.size.width, coinRect.size.height);
             CCLog("coin%d : %f,%f,%f,%f", i, coinRect.getMinX(), coinRect.getMaxX(), coinRect.getMinY(), coinRect.getMaxY());
             if (marioRect.intersectsRect(coinRect))
             {
                 collision = true;
+                coinBatchNode->removeChildByTag(tag_coin_base + i);
+                UserStatus* userStatus = UserStatus::sharedUserStatus();
+                userStatus->score += 10;
                 break;
             }
         }

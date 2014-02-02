@@ -40,6 +40,7 @@ bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag
     //pSky->setTag( StageTag );
 
     CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
+    pGround->setTag(tag_ground);
     paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
     
     
