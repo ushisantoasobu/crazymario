@@ -26,6 +26,7 @@ private:
     float marioPosition;
     const int MAX_JUMP_COUNT = 1;
     int currentJumpCount = 0;
+    int currentDistance;
     
     void makeBackground(StageData* stageData);
     void makeMario();
@@ -38,6 +39,8 @@ private:
     void createScoreLabel();
     void updateScoreLabel();
     void processMarioJump(CCNode* groundNode, CCSprite* marioSprite);
+    CCSpriteBatchNode* enemies;
+    CCSpriteBatchNode* makeEnemies(StageData* stageData);
     
 public:
     

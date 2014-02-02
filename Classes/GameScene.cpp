@@ -5,6 +5,9 @@
 #include "UserStatus.h"
 #include "CoinData.h"
 #include "EnemyData.h"
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -19,6 +22,15 @@ bool GameScene::init() {
         return false;
     }
     
+    // 効果音preload
+    SimpleAudioEngine::sharedEngine()->preloadEffect( "bgm/getcoin.wav" );
+    
+    // BGM再生
+    if ( !SimpleAudioEngine::sharedEngine()->isBackgroundMusicPlaying() )
+    {
+        SimpleAudioEngine::sharedEngine()->playBackgroundMusic( "bgm/waltz.mp3", true );
+    }
+
     // 変数を初期化
     srand((unsigned)time(NULL));
     stageId = 1;
@@ -34,6 +46,9 @@ bool GameScene::init() {
     
     // marioの配置
     makeMario();
+    
+    //敵の作成
+    enemies = makeEnemies(stageData);
     
     // enemy & coinの配置マスタ情報取得
     cocos2d::extension::Json* json = constructStage();
@@ -126,7 +141,10 @@ void GameScene::moveMario(float fDelta)
         this->gameOver();
     } else {
         if (this->checkCollision(2))
-        {   // コイン取得処理
+        {   // 効果音再生
+            unsigned int soundId = SimpleAudioEngine::sharedEngine()->playEffect("bgm/getcoin.wav");
+            
+            //SimpleAudioEngine::sharedEngine()->stopEffect(soundId);
             
             // コイン削除処理
             //CCLog("Get coin!!");
@@ -138,6 +156,30 @@ void GameScene::moveMario(float fDelta)
             Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
         }
     }
+}
+
+CCSpriteBatchNode* GameScene::makeEnemies(StageData* stageData)
+{
+    // コイン画像をCCSpriteBatchNodeに登録
+    CCSpriteBatchNode* pBatchNode = CCSpriteBatchNode::create("item/enemy/enemy2.png" );
+    
+    // シーンにバッチノードを追加
+    for ( int i=0; i < stageData->enemyList->count(); i++ )
+    {
+        CCSprite* sprite = CCSprite::createWithTexture( pBatchNode->getTexture() );
+
+        // コインの座標を設定
+        int x = ((EnemyData*)stageData->enemyList->objectAtIndex(i))->x;
+        int y = ((EnemyData*)stageData->enemyList->objectAtIndex(i))->y;
+        sprite->setPosition( ccp( x, y ) );
+        
+        // スプライトをバッチノードに追加する
+        pBatchNode->addChild(sprite, 12, tag_coin_base + i);
+    }
+    
+    this->addChild(pBatchNode);
+    
+    return pBatchNode;
 }
 
 // ジャンプ判定
@@ -192,12 +234,46 @@ bool GameScene::checkCollision(const int type)
     //CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
     //CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
     
-    bg->goAhead(10);
+    bg->goAhead(4);
+    
+    int enemySpeed = 4;
+    currentDistance += enemySpeed;
+    int enemyCount = enemies->getChildren()->count();
+    for (int i = 0; i < enemyCount; i++) {
+        CCSprite* enemy = (CCSprite*)enemies->getChildren()->objectAtIndex(i);
+        enemy->setPosition(ccp(enemy->getPositionX() - enemySpeed, enemy->getPositionY()));
+    }
     
     if (type == 1)
     {   // enemy情報取得
         objectList = stageData->enemyList;
         //CCLog("check enemy!!");
+        CCArray* list = CCArray::create();
+        list->retain();
+        
+        CCArray *arr = enemies->getChildren();
+        if (arr == NULL) {
+            return false;
+        }
+        list->addObjectsFromArray(arr);
+        for (int i = 0; i < list->count(); i++) {
+            CCSprite *obj = (CCSprite *) list->objectAtIndex(i);
+            obj->getTag();
+            CCRect objRect = CCRectMake(obj->getPositionX() - obj->getContentSize().width / 2,
+                                        obj->getPositionY(),
+                                        obj->getContentSize().width / 2,
+                                        obj->getContentSize().height / 2);
+            /**/
+            CCRect tempMarioRect = CCRectMake(marioRect.origin.x,
+                                              marioRect.origin.y,
+                                              marioRect.size.width / 2,
+                                              marioRect.size.height / 2);
+            if (tempMarioRect.intersectsRect(objRect) ) {
+                //                this->gameOver();
+                return 1;
+            }
+
+        }
     }
     else if (type == 2)
     {   // コイン情報取得
@@ -255,6 +331,7 @@ void GameScene::gameOver()
 void GameScene::gotoGameOver()
 {
     this->unschedule(schedule_selector(GameScene::gotoGameOver));
+    SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
     
     CCLOG("gameoverシーンへ遷移");
     
