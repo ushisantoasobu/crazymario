@@ -102,7 +102,7 @@ CCSpriteBatchNode* BackGround::createCoin( StageData *stageData )
     {
         CCSprite* sprite = CCSprite::createWithTexture( pBatchNode->getTexture() );
         // コインの座標を設定
-        // @todo なにか情報を受け取って情報を作成する
+        // @todo    なにか情報を受け取って情報を作成する
         //float x = CCRANDOM_0_1()*size.width;
         int x = ((CoinData*)stageData->coinList->objectAtIndex(i))->x;
         //float y = CCRANDOM_0_1()*size.height*0.7 + size.height*0.3;

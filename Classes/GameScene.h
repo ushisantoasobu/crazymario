@@ -24,6 +24,7 @@ class GameScene : public CCLayer {
 private:
     int stageId;
     float marioPosition;
+    int currentDistance;
     
     void makeBackground(StageData* stageData);
     void makeMario();
@@ -35,6 +36,8 @@ private:
     void gotoGameOver();
     void createScoreLabel();
     void updateScoreLabel();
+    CCSpriteBatchNode* enemies;
+    CCSpriteBatchNode* makeEnemies(StageData* stageData);
     
 public:
     
