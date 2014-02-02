@@ -3,6 +3,8 @@
 #include "Mario.h"
 #include "GameUtil.h"
 #include "UserStatus.h"
+#include "CoinData.h"
+#include "EnemyData.h"
 
 CCScene* GameScene::scene() {
     CCScene* scene = CCScene::create();
@@ -81,7 +83,7 @@ cocos2d::extension::Json* GameScene::constructStage()
 // マリオを作成する
 void GameScene::makeMario()
 {
-    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    //CCSize size = CCDirector::sharedDirector()->getWinSize();
     
     // ここはマリオ担当が作ったメソッドを入れる
 //    CCSprite* pMario = CCSprite::create("cloud.png");
@@ -116,22 +118,101 @@ void GameScene::moveMario(float fDelta)
     CCLog("marioPosition: %f", marioPosition);
     
     
-    if (this->checkCollision()) {
-        // ゲームオーバー処理
+    if (this->checkCollision(1))
+    {   // ゲームオーバー処理
         CCLog("Game over..");
         this->gameOver();
     } else {
-        Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+        if (this->checkCollision(2))
+        {   // コイン取得処理
+            
+            // コイン削除処理
+            CCLog("Get coin!!");
+            updateScoreLabel();
+        }
+        
+        if (!this->checkJumping())
+        {
+            Mario::moveMario(this, 1, tag_crazyMario, tag_crazyMarioJump);
+        }
     }
 }
 
-// 衝突判定
-bool GameScene::checkCollision()
+// ジャンプ判定
+bool GameScene::checkJumping()
 {
-    int collision = false;
-//    if (rand() % 100 == 1) {
-//        collision = true;
-//    }
+    bool jumping = false;
+    
+    
+    // 床との設置判定
+    
+    return jumping;
+}
+
+// 衝突判定
+bool GameScene::checkCollision(const int type)
+{
+    CCSize size = CCDirector::sharedDirector()->getWinSize();
+    
+    // マリオ情報取得
+    CCSprite* marioSprite = (CCSprite*)this->getChildByTag(tag_crazyMario);
+    
+    CCParallaxNode* paraNode = (CCParallaxNode*)this->getChildByTag(tag_paranode);
+    CCNode* coinBatchNode = (CCNode*)paraNode->getChildByTag(tag_coinbatch);
+    CCNode* bgNode = (CCNode*)paraNode->getChildByTag(tag_background);
+    CCNode* groundNode = (CCNode*)paraNode->getChildByTag(tag_ground);
+    
+    CCArray* objectList = NULL;
+    StageData* stageData = GameUtil::getGameData();
+    bool collision = false;
+    CCRect marioRect = marioSprite->boundingBox();
+    //marioRect.setRect(marioRect.getMinX(), marioRect.getMinY(), marioRect.size.width - 10, marioRect.size.height - 10);
+    CCRect bgRect = bgNode->boundingBox();
+    CCRect groundRect = groundNode->boundingBox();
+    
+    CCLog("mario : %f,%f,%f,%f", marioRect.getMinX(), marioRect.getMaxX(), marioRect.getMinY(), marioRect.getMaxY());
+    CCLog("bg : %f,%f,%f,%f", bgRect.getMinX(), bgRect.getMaxX(), bgRect.getMinY(), bgRect.getMaxY());
+    CCLog("paraNode : %f,%f", paraNode->getPositionX(), paraNode->getPositionY());
+    
+    if (type == 1)
+    {   // enemy情報取得
+        objectList = stageData->enemyList;
+        CCLog("check enemy!!");
+    }
+    else if (type == 2)
+    {   // コイン情報取得
+        objectList = stageData->coinList;
+        CCLog("check coin!!");
+        for (int i=0; i < objectList->count(); i++)
+        {
+            CCSprite* coinSprite = (CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i);
+            //CCRect coinRect = ((CCSprite*)coinBatchNode->getChildByTag(tag_coin_base + i))->boundingBox();
+            if (coinSprite == 0)
+            {
+                CCLog("coinSprite is already deleted!!");
+                continue;
+            }
+            CCRect coinRect = coinSprite->boundingBox();
+            
+            coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), coinRect.getMidY() + size.height * 0.4, coinRect.size.width, coinRect.size.height);
+            //coinRect.setRect(coinRect.getMidX() + paraNode->getPositionX(), ((CoinData*)objectList->objectAtIndex(i))->y, coinRect.size.width, coinRect.size.height);
+            CCLog("coin%d : %f,%f,%f,%f", i, coinRect.getMinX(), coinRect.getMaxX(), coinRect.getMinY(), coinRect.getMaxY());
+            if (marioRect.intersectsRect(coinRect))
+            {
+                collision = true;
+                coinBatchNode->removeChildByTag(tag_coin_base + i);
+                UserStatus* userStatus = UserStatus::sharedUserStatus();
+                userStatus->score += 10;
+                break;
+            }
+        }
+    }
+    else
+    {   // それ以外は何もしない
+        return false;
+    }
+    
+    
     return collision;
 }
 

@@ -14,6 +14,9 @@ enum Tag {
     tag_crazyMario,
     tag_crazyMarioJump,
     tag_score_label,
+    tag_paranode,
+    tag_coinbatch,
+    tag_ground,
     tag_coin_base = 10000
 };
 
@@ -26,7 +29,8 @@ private:
     void makeMario();
     cocos2d::extension::Json* constructStage();
     void moveMario(float fDelta);
-    bool checkCollision();
+    bool checkCollision(const int type);
+    bool checkJumping();
     void gameOver();
     void gotoGameOver();
     void createScoreLabel();

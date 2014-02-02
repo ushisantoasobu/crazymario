@@ -20,7 +20,7 @@ enum enemyType
     enemyTypeLarge
 };
 
-class EnemyData : public CCObject
+class EnemyData : public CCNode
 {
 public:
     

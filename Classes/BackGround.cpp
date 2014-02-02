@@ -32,15 +32,36 @@ bool BackGround::createStage( CCLayer* Scene, StageData *stageData, int StageTag
     //pBG->addChild( pCloud2 );
     
     CCParallaxNode* paraNode = CCParallaxNode::create();
+    
     CCSpriteBatchNode* pCoins = createCoin( Scene, stageData );
+    pCoins->setTag(tag_coinbatch);
+
     //CCTMXTiledMap* pSky = CCTMXTiledMap::create( "ui/bgSky.tmx" );
     //pSky->setTag( StageTag );
 
     CCTMXTiledMap* pGround = CCTMXTiledMap::create( "ui/groundStage001.tmx" );
+    pGround->setTag(tag_ground);
     paraNode->addChild( pBG, 1, ccp( 0.1f, 0 ), ccp( -size.width * 0.5, size.height * 0.5 ) );
+    
+    
+    /*for ( int i=0; i < stageData->coinList->count(); i++ )
+    {
+        CCSprite* pCoin = CCSprite::create("item/coin/goldCoin5.png");
+        //float x = CCRANDOM_0_1()*size.width;
+        int x = ((CoinData*)stageData->coinList->objectAtIndex(i))->x;
+        //float y = CCRANDOM_0_1()*size.height*0.7 + size.height*0.3;
+        int y = ((CoinData*)stageData->coinList->objectAtIndex(i))->y;
+        pCoin->setTag(tag_coin_base + i);
+        
+        paraNode->addChild( pCoin, 3, ccp( 1.0f, 0 ), ccp( x, y ) );
+    }
+     */
+    
     paraNode->addChild( pCoins, 3, ccp( 1.0f, 0 ), ccp( 0, size.height * 0.3 ) );
+    
     paraNode->addChild( pGround, 2, ccp( 1.0f, 0 ), ccp( -size.width * 0.5, 0 ) );
     paraNode->setPosition( ccp( size.width * 0.5, size.height * 0.5 ) );
+    paraNode->setTag(tag_paranode);
     Scene->addChild( paraNode );
     
     CCMoveBy* move = CCMoveBy::create( 10.0f, ccp( -size.width / 2, 0 ) );
