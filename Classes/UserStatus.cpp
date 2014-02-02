@@ -1,3 +1,10 @@
+//
+//  ユーザ情報シングルトンクラス
+//
+//  Created by s-sato on 14/01/26.
+//
+//
+
 #include "UserStatus.h"
 
 UserStatus* UserStatus::m_mySingleton = NULL;

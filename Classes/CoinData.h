@@ -2,7 +2,7 @@
 //  CoinData.h
 //  crazymario
 //
-//  Created by cocos2d-x on 14/01/26.
+//  Created by s-sato on 14/01/26.
 //
 //
 

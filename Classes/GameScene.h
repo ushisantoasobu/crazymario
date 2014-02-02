@@ -28,6 +28,7 @@ private:
     int currentJumpCount = 0;
     int currentDistance;
     
+    StageData* stageData;
     void makeBackground(StageData* stageData);
     void makeMario();
     cocos2d::extension::Json* constructStage();

@@ -6,6 +6,7 @@
 #include "CoinData.h"
 #include "EnemyData.h"
 #include "SimpleAudioEngine.h"
+#include "TitleScene.h"
 
 using namespace CocosDenshion;
 
@@ -36,7 +37,7 @@ bool GameScene::init() {
     stageId = 1;
     marioPosition = 0;
     
-    StageData* stageData = GameUtil::getGameData();
+    stageData = GameUtil::getGameData();
     
     //スコアラベルを作成する
     createScoreLabel();
@@ -223,7 +224,6 @@ bool GameScene::checkCollision(const int type)
     processMarioJump(groundNode, marioSprite);
     
     CCArray* objectList = NULL;
-    StageData* stageData = GameUtil::getGameData();
     bool collision = false;
     CCRect marioRect = marioSprite->boundingBox();
     //marioRect.setRect(marioRect.getMinX(), marioRect.getMinY(), marioRect.size.width - 10, marioRect.size.height - 10);
@@ -312,7 +312,12 @@ bool GameScene::checkCollision(const int type)
     return collision;
 }
 
-// ゲームオーバー処理
+
+/**
+ * ゲームオーバー時の処理
+ *
+ * Created by s-sato on 14/01/26.
+ */
 void GameScene::gameOver()
 {
     //スケジュールとめる
@@ -328,6 +333,11 @@ void GameScene::gameOver()
     //CCDirector::sharedDirector()->replaceScene(gameScene);
 }
 
+/**
+ * ゲームオーバへ遷移する
+ *
+ * Created by s-sato on 14/01/26.
+ */
 void GameScene::gotoGameOver()
 {
     this->unschedule(schedule_selector(GameScene::gotoGameOver));
@@ -336,8 +346,8 @@ void GameScene::gotoGameOver()
     CCLOG("gameoverシーンへ遷移");
     
     // TODO: ゲームオーバー画面に飛ばす？？
-    //CCScene* gameScene = (CCScene*)GameScene::create();
-    //CCDirector::sharedDirector()->replaceScene(gameScene);
+    CCScene* title = (CCScene*)TitleScene::create();
+    CCDirector::sharedDirector()->replaceScene(title);
 }
 
 // タップが開始されたときの処理
@@ -362,6 +372,11 @@ void GameScene::ccTouchEnded(CCTouch* pTouch, CCEvent* pEvent)
     }
 }
 
+/**
+ * スコア表示ラベルを作成する
+ *
+ * Created by s-sato on 14/01/26.
+ */
 void GameScene::createScoreLabel()
 {
     cocos2d::CCSize winSize = CCDirector::sharedDirector()->getWinSize();
@@ -373,6 +388,11 @@ void GameScene::createScoreLabel()
     this->addChild(text, 100, tag_score_label);
 }
 
+/**
+ * スコア表示更新
+ *
+ * Created by s-sato on 14/01/26.
+ */
 void GameScene::updateScoreLabel()
 {
     CCLabelTTF *text = (CCLabelTTF *)this->getChildByTag(tag_score_label);    

@@ -1,3 +1,10 @@
+//
+//  ユーザ情報シングルトンクラス
+//
+//  Created by s-sato on 14/01/26.
+//
+//
+
 #ifndef __test__UserStatus__
 #define __test__UserStatus__
 

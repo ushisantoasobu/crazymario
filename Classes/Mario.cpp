@@ -15,6 +15,9 @@ void Mario::createMario(cocos2d::CCLayer* gameScene, int stageId, int tagId) {
 
 void Mario::moveMario(CCLayer* gameScene, int stageId, int tagId, int marioActionTag) {
     CCSprite* marioSprite = (CCSprite*) gameScene->getChildByTag(tagId);
+    if(!marioSprite){
+        return;
+    }
     int moveSpeedX = 0.2;
     marioSprite->setPosition(ccp(marioSprite->getPosition().x + moveSpeedX, marioSprite->getPosition().y));
     CCAction* marioAction = marioSprite->getActionByTag(marioActionTag);
@@ -27,11 +30,20 @@ void Mario::moveMario(CCLayer* gameScene, int stageId, int tagId, int marioActio
 
 void Mario::jumpMario(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag){
     CCSprite* marioSprite = (CCSprite*) gameScene->getChildByTag(tagId);
+    if(!marioSprite){
+        return;
+    }
     int moveX = 0;
     int moveY = 0;
     marioSprite->runAction(CCJumpBy::create(1.0, ccp(moveX, moveY), 300, 1));
 }
 
+
+/**
+ * マリオ死亡アニメーション
+ *
+ * Created by s-sato on 14/01/26.
+ */
 void Mario::die(CCLayer* gameScene, int stageId, int tagId, int marioJumpTag){
     gameScene->removeChildByTag(tagId);
     CCParticleSystemQuad* p = CCParticleSystemQuad::create("particle/dead.plist");
